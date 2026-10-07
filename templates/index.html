@@ -1,0 +1,106 @@
+<!DOCTYPE html>
+<html lang="pt-PT">
+<head>
+  <meta charset="UTF-8">
+  <meta name="viewport" content="width=device-width, initial-scale=1">
+  <title>Battery Manager</title>
+  <style>
+    * { box-sizing: border-box; }
+    body {
+      margin: 0;
+      font-family: system-ui, sans-serif;
+      background: #f3f4f6;
+      color: #1f2937;
+    }
+    header {
+      background: #1f2937;
+      color: #fff;
+      padding: 1rem 1.5rem;
+    }
+    h1 { margin: 0; font-size: 1.25rem; }
+    main { max-width: 800px; margin: 1.5rem auto; padding: 0 1rem; }
+    #count { color: #6b7280; margin-bottom: 1rem; }
+    #battery-list {
+      list-style: none;
+      margin: 0;
+      padding: 0;
+      display: grid;
+      gap: 0.75rem;
+    }
+    .battery {
+      background: #fff;
+      border-radius: 10px;
+      padding: 1rem;
+      box-shadow: 0 1px 3px rgba(0, 0, 0, 0.1);
+    }
+    .battery-top {
+      display: flex;
+      justify-content: space-between;
+      align-items: baseline;
+    }
+    .battery-name { font-weight: 600; }
+    .battery-specs { color: #6b7280; font-size: 0.9rem; }
+    .bar {
+      height: 10px;
+      background: #e5e7eb;
+      border-radius: 5px;
+      margin-top: 0.75rem;
+      overflow: hidden;
+    }
+    .bar-fill { height: 100%; border-radius: 5px; }
+    .high { background: #22c55e; }
+    .medium { background: #f59e0b; }
+    .low { background: #ef4444; }
+    .pct { font-weight: 600; }
+  </style>
+</head>
+<body>
+  <header><h1>Battery Manager</h1></header>
+  <main>
+    <p id="count"></p>
+    <ul id="battery-list"></ul>
+  </main>
+
+  <script>
+    // Dados de exemplo (mesmos campos da classe Battery em Python)
+    const batteries = [
+      { id: 1, name: "Parkside", voltage_v: 20, capacity_ah: 2.4, charge_pct: 3 },
+      { id: 2, name: "Bosch", voltage_v: 18, capacity_ah: 4.0, charge_pct: 100 },
+      { id: 3, name: "Makita", voltage_v: 18, capacity_ah: 5.0, charge_pct: 55 },
+    ];
+
+    function levelClass(pct) {
+      if (pct > 60) return "high";
+      if (pct > 20) return "medium";
+      return "low";
+    }
+
+    function renderBatteries(list) {
+      const ul = document.getElementById("battery-list");
+      document.getElementById("count").textContent = `${list.length} baterias`;
+      ul.innerHTML = "";
+
+      list.forEach((b) => {
+        const li = document.createElement("li");
+        li.className = "battery";
+        li.innerHTML = `
+          <div class="battery-top">
+            <span class="battery-name">${b.name}</span>
+            <span class="pct">${b.charge_pct}%</span>
+          </div>
+          <div class="battery-specs">${b.voltage_v} V · ${b.capacity_ah} Ah</div>
+          <div class="bar">
+            <div class="bar-fill ${levelClass(b.charge_pct)}" style="width: ${b.charge_pct}%"></div>
+          </div>
+        `;
+        ul.appendChild(li);
+      });
+    }
+
+    renderBatteries(batteries);
+
+    // Mais tarde, para ler da tua API:
+    // fetch("/api/batteries").then(r => r.json()).then(renderBatteries);
+  </script>
+</body>
+</html>
